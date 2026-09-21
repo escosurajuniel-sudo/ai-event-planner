@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Planora AI Event Planner Chatbot" />
+  <title>Planora — AI Event Planner</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">P</div>
+        <div>
+          <h1>Planora</h1>
+          <p>AI Event Planner</p>
+        </div>
+      </div>
+
+      <section class="side-copy">
+        <span class="eyebrow">PLAN SMARTER</span>
+        <h2>Turn an idea into an event plan.</h2>
+        <p>Tell Planora what you're organizing. It can help structure your budget, checklist, timeline, and event-day program.</p>
+      </section>
+
+      <div class="tips">
+        <p class="tips-title">Helpful details</p>
+        <span>Event type</span>
+        <span>Date</span>
+        <span>Location</span>
+        <span>Guest count</span>
+        <span>Budget</span>
+        <span>Theme</span>
+      </div>
+
+      <p class="privacy">Your API key stays on the server and is never sent to the browser.</p>
+    </aside>
+
+    <section class="chat-panel">
+      <header class="chat-header">
+        <div>
+          <p class="status"><span></span> AI PLANNER ONLINE</p>
+          <h2>Plan your next event</h2>
+        </div>
+        <button id="newChatBtn" class="secondary-btn" type="button">New chat</button>
+      </header>
+
+      <div id="messages" class="messages" aria-live="polite">
+        <div class="message-row bot">
+          <div class="avatar">P</div>
+          <div class="bubble">
+            <strong>Hi! I'm Planora.</strong>
+            <p>Tell me about the event you want to organize. You can start with something like:</p>
+            <p class="example">“Plan an 18th birthday for 70 guests with a ₱50,000 budget and an elegant theme.”</p>
+          </div>
+        </div>
+
+        <div class="quick-prompts" id="quickPrompts">
+          <button type="button" data-prompt="Help me plan a birthday party.">Birthday party</button>
+          <button type="button" data-prompt="Help me plan a graduation celebration.">Graduation</button>
+          <button type="button" data-prompt="Help me plan a wedding reception.">Wedding</button>
+          <button type="button" data-prompt="Help me plan a corporate event.">Corporate event</button>
+        </div>
+      </div>
+
+      <form id="chatForm" class="composer">
+        <label class="sr-only" for="messageInput">Message Planora</label>
+        <textarea id="messageInput" rows="1" maxlength="6000" placeholder="Describe your event..." required></textarea>
+        <button id="sendBtn" class="send-btn" type="submit" aria-label="Send message">➜</button>
+      </form>
+      <p class="disclaimer">AI-generated budgets and recommendations are estimates. Verify actual supplier prices and availability.</p>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
