@@ -280,16 +280,14 @@ app.get("*", (req, res) => {
     );
 });
 
-app.listen(PORT, () => {
-
-    console.log("");
-    console.log("---------------------------------------");
-    console.log(" Planora AI Event Planner");
-    console.log("---------------------------------------");
-    console.log(` Server:   http://localhost:${PORT}`);
-    console.log(` AI:       Google Gemini`);
-    console.log(` Model:    ${MODEL}`);
-    console.log("---------------------------------------");
-    console.log("");
-
+app.listen(PORT, "0.0.0.0", () => {
+  console.log("");
+  console.log("---------------------------------------");
+  console.log(" Planora AI Event Planner");
+  console.log("---------------------------------------");
+  console.log(` Server running on port: ${PORT}`);
+  console.log(` AI:       Google Gemini`);
+  console.log(` Model:    ${MODEL}`);
+  console.log("---------------------------------------");
+  console.log("");
 });
