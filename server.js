@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -206,8 +206,10 @@ for (let attempt = 1; attempt <= maxRetries; attempt++) {
     } catch (error) {
 
         const isServerBusy =
-            error?.status === 503 ||
+            [429, 503].includes(error?.status) ||
+            error?.message?.includes("429") ||
             error?.message?.includes("503") ||
+            error?.message?.includes("RESOURCE_EXHAUSTED") ||
             error?.message?.includes("UNAVAILABLE");
 
         if (!isServerBusy || attempt === maxRetries) {
@@ -215,7 +217,7 @@ for (let attempt = 1; attempt <= maxRetries; attempt++) {
         }
 
         console.log(
-            `Gemini is busy. Retrying... (${attempt}/${maxRetries})`
+            `Gemini is temporarily unavailable. Retrying... (${attempt}/${maxRetries})`
         );
 
         // Wait longer after each failed attempt:

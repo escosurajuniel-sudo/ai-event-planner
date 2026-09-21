@@ -3,76 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Planora AI Event Planner Chatbot" />
+  <meta name="description" content="Planora — AI-powered event planning assistant" />
+  <meta name="theme-color" content="#173c33" />
   <title>Planora — AI Event Planner</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <main class="app-shell">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">P</div>
-        <div>
-          <h1>Planora</h1>
-          <p>AI Event Planner</p>
+      <div class="brand-row">
+        <div class="brand">
+          <div class="logo">P</div>
+          <div><h1>Planora</h1><p>AI Event Planner</p></div>
         </div>
+        <button id="themeBtn" class="icon-btn dark-icon" type="button" aria-label="Toggle theme" title="Toggle theme">☾</button>
       </div>
 
       <section class="side-copy">
-        <span class="eyebrow">PLAN SMARTER</span>
-        <h2>Turn an idea into an event plan.</h2>
-        <p>Tell Planora what you're organizing. It can help structure your budget, checklist, timeline, and event-day program.</p>
+        <span class="eyebrow">PLAN WITH CONFIDENCE</span>
+        <h2>Your event, organized from idea to timeline.</h2>
+        <p>Chat naturally with Planora. Share what you know now and refine the details as you go.</p>
       </section>
 
-      <div class="tips">
-        <p class="tips-title">Helpful details</p>
-        <span>Event type</span>
-        <span>Date</span>
-        <span>Location</span>
-        <span>Guest count</span>
-        <span>Budget</span>
-        <span>Theme</span>
-      </div>
+      <section class="event-card" aria-labelledby="eventDetailsTitle">
+        <div class="event-card-head">
+          <div><span class="eyebrow">LIVE SUMMARY</span><h3 id="eventDetailsTitle">Event details</h3></div>
+          <span id="progressText" class="progress-text">0/6</span>
+        </div>
+        <div class="progress-track"><span id="progressBar"></span></div>
+        <dl class="event-details">
+          <div><dt>Event</dt><dd id="detailType">Not set</dd></div>
+          <div><dt>Date</dt><dd id="detailDate">Not set</dd></div>
+          <div><dt>Location</dt><dd id="detailLocation">Not set</dd></div>
+          <div><dt>Guests</dt><dd id="detailGuests">Not set</dd></div>
+          <div><dt>Budget</dt><dd id="detailBudget">Not set</dd></div>
+          <div><dt>Theme</dt><dd id="detailTheme">Not set</dd></div>
+        </dl>
+      </section>
 
-      <p class="privacy">Your API key stays on the server and is never sent to the browser.</p>
+      <p class="privacy">Your Gemini API key stays on the server. AI suggestions are estimates; confirm prices and availability with suppliers.</p>
     </aside>
 
     <section class="chat-panel">
       <header class="chat-header">
         <div>
-          <p class="status"><span></span> AI PLANNER ONLINE</p>
+          <p id="serviceStatus" class="status"><span></span> CHECKING AI</p>
           <h2>Plan your next event</h2>
         </div>
-        <button id="newChatBtn" class="secondary-btn" type="button">New chat</button>
+        <div class="header-actions">
+          <button id="exportBtn" class="secondary-btn" type="button" disabled>Export plan</button>
+          <button id="newChatBtn" class="secondary-btn" type="button">New chat</button>
+        </div>
       </header>
 
       <div id="messages" class="messages" aria-live="polite">
-        <div class="message-row bot">
-          <div class="avatar">P</div>
-          <div class="bubble">
-            <strong>Hi! I'm Planora.</strong>
-            <p>Tell me about the event you want to organize. You can start with something like:</p>
-            <p class="example">“Plan an 18th birthday for 70 guests with a ₱50,000 budget and an elegant theme.”</p>
+        <div class="welcome-card">
+          <div class="welcome-mark">P</div>
+          <span class="eyebrow">WELCOME TO PLANORA</span>
+          <h3>What are we celebrating?</h3>
+          <p>Give me a few details or start with just the event type. I’ll help you build the rest.</p>
+          <div class="quick-prompts" id="quickPrompts">
+            <button type="button" data-prompt="Help me plan an 18th birthday debut.">🎂 18th Birthday</button>
+            <button type="button" data-prompt="Help me plan a graduation celebration.">🎓 Graduation</button>
+            <button type="button" data-prompt="Help me plan a wedding reception.">💍 Wedding</button>
+            <button type="button" data-prompt="Help me plan a corporate event.">💼 Corporate</button>
           </div>
         </div>
+      </div>
 
-        <div class="quick-prompts" id="quickPrompts">
-          <button type="button" data-prompt="Help me plan a birthday party.">Birthday party</button>
-          <button type="button" data-prompt="Help me plan a graduation celebration.">Graduation</button>
-          <button type="button" data-prompt="Help me plan a wedding reception.">Wedding</button>
-          <button type="button" data-prompt="Help me plan a corporate event.">Corporate event</button>
-        </div>
+      <div id="errorBanner" class="error-banner" role="alert" hidden>
+        <span id="errorText"></span>
+        <button id="retryBtn" type="button">Retry</button>
       </div>
 
       <form id="chatForm" class="composer">
         <label class="sr-only" for="messageInput">Message Planora</label>
-        <textarea id="messageInput" rows="1" maxlength="6000" placeholder="Describe your event..." required></textarea>
-        <button id="sendBtn" class="send-btn" type="submit" aria-label="Send message">➜</button>
+        <textarea id="messageInput" rows="1" maxlength="6000" placeholder="Tell Planora about your event..." required></textarea>
+        <div class="composer-foot">
+          <span>Enter to send · Shift + Enter for a new line</span>
+          <button id="sendBtn" class="send-btn" type="submit" aria-label="Send message">➜</button>
+        </div>
       </form>
-      <p class="disclaimer">AI-generated budgets and recommendations are estimates. Verify actual supplier prices and availability.</p>
+      <p class="disclaimer">Planora can make mistakes. Verify important event details, prices, and supplier availability.</p>
     </section>
   </main>
-
   <script src="/app.js"></script>
 </body>
 </html>
