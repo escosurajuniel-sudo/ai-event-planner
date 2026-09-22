@@ -294,14 +294,14 @@ async function init() {
 
     // Watch login/logout state
     supabaseClient.auth.onAuthStateChange(
-      (_event, newSession) => {
-        session = newSession;
+  (event, newSession) => {
+    session = newSession;
 
-        if (!newSession) {
-          showAuth();
-        }
-      }
-    );
+    if (event === "SIGNED_OUT") {
+      showAuth();
+    }
+  }
+);
 
     // Open app if already logged in
     if (session) {
