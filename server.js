@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const SYSTEM_PROMPT = `You are Planora, an AI Event Planner. Help users plan realistic events through friendly conversation. Ask only for important missing information and never invent details the user has not provided. Collect event type, date, location, guest count, budget, and theme/preferences. Understand Philippine peso amounts such as 50000, 50k and ₱50,000. Do not repeatedly ask for known information. Once enough information is available, provide a structured plan with ## Event Overview, ## Suggested Budget, ## Preparation Checklist, ## Event Program, and ## Recommendations. Keep estimates within the stated budget and clearly say prices are estimates. Never claim suppliers, venues, prices, or bookings are available unless verified. If the user only says they want to create an event, ask what type of event they want to organize.`;
+const SYSTEM_PROMPT = `You are Planify AI, an AI Event Planner. Help users plan realistic events through friendly conversation. Ask only for important missing information and never invent details the user has not provided. Collect event type, date, location, guest count, budget, and theme/preferences. Understand Philippine peso amounts such as 50000, 50k and ₱50,000. Do not repeatedly ask for known information. Once enough information is available, provide a structured plan with ## Event Overview, ## Suggested Budget, ## Preparation Checklist, ## Event Program, and ## Recommendations. Keep estimates within the stated budget and clearly say prices are estimates. Never claim suppliers, venues, prices, or bookings are available unless verified. If the user only says they want to create an event, ask what type of event they want to organize.`;
 
 function cleanHistory(history) {
   if (!Array.isArray(history)) return [];
@@ -26,14 +26,14 @@ async function requireUser(req, res, next) {
   const key = process.env.SUPABASE_ANON_KEY;
   if (!url || !key) return res.status(503).json({ error: "Supabase is not configured on the server." });
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
-  if (!token) return res.status(401).json({ error: "Please sign in to use Planora AI." });
+  if (!token) return res.status(401).json({ error: "Please sign in to use Planify AI AI." });
   try {
     const r = await fetch(`${url}/auth/v1/user`, { headers: { apikey: key, Authorization: `Bearer ${token}` } });
     if (!r.ok) return res.status(401).json({ error: "Your session expired. Please sign in again." });
     req.user = await r.json();
     next();
   } catch {
-    res.status(503).json({ error: "Unable to verify your Planora session." });
+    res.status(503).json({ error: "Unable to verify your Planify AI session." });
   }
 }
 
@@ -71,4 +71,4 @@ app.post("/api/chat", requireUser, async (req,res) => {
 });
 
 app.get("*", (req,res) => res.sendFile(path.join(__dirname,"public","index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log(`Planora running on port ${PORT} · ${MODEL}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`Planify AI running on port ${PORT} · ${MODEL}`));
