@@ -488,14 +488,58 @@ function renderIdentity() {
   $("#miniEmail").textContent =
     session.user.email;
 
-  $("#miniAvatar").textContent =
-    initials(name);
+  const miniAvatar =
+  $("#miniAvatar");
+
+if (miniAvatar) {
+  if (profile.avatar_url) {
+    miniAvatar.innerHTML = "";
+
+    const img =
+      document.createElement("img");
+
+    img.src = profile.avatar_url;
+    img.alt = `${name}'s profile picture`;
+
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "50%";
+
+    miniAvatar.appendChild(img);
+  } else {
+    miniAvatar.textContent =
+      initials(name);
+  }
+}
 
   $("#welcomeName").textContent =
     `${name}, what are we planning next?`;
 
-  $("#profileAvatar").textContent =
-    initials(name);
+ const profileAvatar =
+  $("#profileAvatar");
+
+if (profileAvatar) {
+  if (profile.avatar_url) {
+    profileAvatar.innerHTML = "";
+
+    const img =
+      document.createElement("img");
+
+    img.src = profile.avatar_url;
+    img.alt = `${name}'s profile picture`;
+
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "50%";
+
+    profileAvatar.appendChild(img);
+  } else {
+    profileAvatar.textContent =
+      initials(name);
+  }
+}
 
   $("#profileFullName").value =
     profile.full_name || "";
@@ -2005,53 +2049,216 @@ $$(".settings-tab").forEach(
 // PROFILE SETTINGS
 // ========================================
 
+$("#profilePictureFile")?.addEventListener(
+  "change",
+  (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast(
+        "Please choose a JPG, PNG, or WebP image.",
+        "error"
+      );
+
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast(
+        "Profile picture must be 5 MB or smaller.",
+        "error"
+      );
+
+      event.target.value = "";
+      return;
+    }
+
+    // Preview selected image
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const avatar = $("#profileAvatar");
+
+      if (avatar) {
+        avatar.innerHTML = "";
+
+        const img = document.createElement("img");
+
+        img.src = reader.result;
+        img.alt = "Profile picture";
+
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "50%";
+
+        avatar.appendChild(img);
+      }
+    };
+
+    reader.readAsDataURL(file);
+  }
+);
+
+
 $("#profileForm")?.addEventListener(
   "submit",
   async (event) => {
     event.preventDefault();
 
-    const patch = {
-      full_name:
-        $("#profileFullName")
-          .value.trim(),
-
-      display_name:
-        $("#profileDisplayName")
-          .value.trim(),
-
-      avatar_url:
-        $("#profilePicture")
-          .value.trim() || null,
-
-      updated_at:
-        new Date().toISOString(),
-    };
-
-    const { data, error } =
-      await supabaseClient
-  .from("profiles")
-        .update(patch)
-        .eq(
-          "id",
-          session.user.id
-        )
-        .select()
-        .single();
-
-    if (error) {
+    if (!session?.user) {
       toast(
-        error.message,
+        "Please log in again.",
         "error"
       );
-
       return;
     }
 
-    profile = data;
+    const saveButton =
+      event.currentTarget.querySelector(
+        'button[type="submit"]'
+      );
 
-    renderIdentity();
+    if (saveButton) {
+      saveButton.disabled = true;
+      saveButton.textContent = "Saving…";
+    }
 
-    toast("Profile saved.");
+    try {
+      let avatarUrl =
+        profile.avatar_url || null;
+
+      const file =
+        $("#profilePictureFile")?.files?.[0];
+
+      // Upload new profile picture
+      if (file) {
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(
+            "Please choose a JPG, PNG, or WebP image."
+          );
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error(
+            "Profile picture must be 5 MB or smaller."
+          );
+        }
+
+        const extension =
+          file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+        const filePath =
+          `${session.user.id}/profile.${extension}`;
+
+        const { error: uploadError } =
+          await supabaseClient.storage
+            .from("avatars")
+            .upload(
+              filePath,
+              file,
+              {
+                cacheControl: "3600",
+                upsert: true,
+                contentType: file.type,
+              }
+            );
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: publicData } =
+          supabaseClient.storage
+            .from("avatars")
+            .getPublicUrl(filePath);
+
+        avatarUrl =
+          `${publicData.publicUrl}?v=${Date.now()}`;
+      }
+
+      const patch = {
+        full_name:
+          $("#profileFullName")
+            .value.trim(),
+
+        display_name:
+          $("#profileDisplayName")
+            .value.trim(),
+
+        avatar_url: avatarUrl,
+
+        updated_at:
+          new Date().toISOString(),
+      };
+
+      const { data, error } =
+        await supabaseClient
+          .from("profiles")
+          .update(patch)
+          .eq(
+            "id",
+            session.user.id
+          )
+          .select()
+          .single();
+
+      if (error) {
+        throw error;
+      }
+
+      profile = data;
+
+      if ($("#profilePicture")) {
+        $("#profilePicture").value =
+          profile.avatar_url || "";
+      }
+
+      if ($("#profilePictureFile")) {
+        $("#profilePictureFile").value = "";
+      }
+
+      renderIdentity();
+
+      toast("Profile saved.");
+
+    } catch (error) {
+      console.error(
+        "Profile save error:",
+        error
+      );
+
+      toast(
+        error.message ||
+          "Unable to save profile.",
+        "error"
+      );
+
+    } finally {
+      if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.textContent =
+          "Save profile";
+      }
+    }
   }
 );
 
