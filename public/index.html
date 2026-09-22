@@ -1,92 +1,41 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Planora — AI-powered event planning assistant" />
-  <meta name="theme-color" content="#173c33" />
-  <title>Planora — AI Event Planner</title>
-  <link rel="stylesheet" href="/style.css" />
-</head>
-<body>
-  <main class="app-shell">
-    <aside class="sidebar">
-      <div class="brand-row">
-        <div class="brand">
-          <div class="logo">P</div>
-          <div><h1>Planora</h1><p>AI Event Planner</p></div>
-        </div>
-        <button id="themeBtn" class="icon-btn dark-icon" type="button" aria-label="Toggle theme" title="Toggle theme">☾</button>
-      </div>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Planify AI — private AI event planning workspace"><meta name="theme-color" content="#173c33"><title>Planify AI — AI Event Planner</title><link rel="stylesheet" href="/style.css"></head><body>
+<div id="toast" class="toast" hidden></div>
+<section id="authView" class="auth-view">
+  <div class="auth-brand"><div class="logo big">P</div><h1>Planify AI</h1><p>Your private AI event planning workspace.</p></div>
+  <div class="auth-card">
+    <div class="auth-tabs"><button class="auth-tab active" data-auth-tab="login">Log in</button><button class="auth-tab" data-auth-tab="signup">Create account</button></div>
+    <form id="loginForm" class="auth-form"><h2>Welcome back</h2><p>Continue planning your saved events.</p><label>Email<input id="loginEmail" type="email" required autocomplete="email"></label><label>Password<input id="loginPassword" type="password" required autocomplete="current-password"></label><button class="primary-btn" type="submit">Log in</button><button id="forgotBtn" class="text-btn" type="button">Forgot password?</button></form>
+    <form id="signupForm" class="auth-form" hidden><h2>Create your account</h2><p>Your events stay private to your account.</p><label>Full name<input id="signupName" maxlength="80" required></label><label>Email<input id="signupEmail" type="email" required autocomplete="email"></label><label>Password<input id="signupPassword" type="password" minlength="6" required autocomplete="new-password"></label><label>Confirm password<input id="signupConfirm" type="password" minlength="6" required></label><button class="primary-btn" type="submit">Create account</button></form>
+    <p id="authMessage" class="form-message"></p>
+  </div>
+</section>
 
-      <section class="side-copy">
-        <span class="eyebrow">PLAN WITH CONFIDENCE</span>
-        <h2>Your event, organized from idea to timeline.</h2>
-        <p>Chat naturally with Planora. Share what you know now and refine the details as you go.</p>
-      </section>
+<div id="appView" class="app" hidden>
+  <aside class="nav-sidebar">
+    <div class="brand"><div class="logo">P</div><div><strong>Planify AI</strong><small>AI Event Planner</small></div></div>
+    <nav><button class="nav-btn active" data-view="dashboard">⌂ <span>Dashboard</span></button><button class="nav-btn" data-view="events">▣ <span>My Events</span></button><button class="nav-btn" id="newEventNav">＋ <span>New Event</span></button><button class="nav-btn" data-view="planner">✦ <span>AI Planner</span></button><div class="nav-spacer"></div><button class="nav-btn" data-view="settings">⚙ <span>Settings</span></button></nav>
+    <div class="account-mini"><div id="miniAvatar" class="avatar">U</div><div class="account-text"><strong id="miniName">User</strong><small id="miniEmail"></small></div><button id="logoutBtn" title="Sign out">↪</button></div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><button id="mobileMenu" class="icon-btn">☰</button><div><p class="eyebrow">Planify AI WORKSPACE</p><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="saveState" class="save-state"></span><button id="themeBtn" class="icon-btn" title="Theme">☾</button></div></header>
 
-      <section class="event-card" aria-labelledby="eventDetailsTitle">
-        <div class="event-card-head">
-          <div><span class="eyebrow">LIVE SUMMARY</span><h3 id="eventDetailsTitle">Event details</h3></div>
-          <span id="progressText" class="progress-text">0/6</span>
-        </div>
-        <div class="progress-track"><span id="progressBar"></span></div>
-        <dl class="event-details">
-          <div><dt>Event</dt><dd id="detailType">Not set</dd></div>
-          <div><dt>Date</dt><dd id="detailDate">Not set</dd></div>
-          <div><dt>Location</dt><dd id="detailLocation">Not set</dd></div>
-          <div><dt>Guests</dt><dd id="detailGuests">Not set</dd></div>
-          <div><dt>Budget</dt><dd id="detailBudget">Not set</dd></div>
-          <div><dt>Theme</dt><dd id="detailTheme">Not set</dd></div>
-        </dl>
-      </section>
+    <section id="dashboardView" class="page view-page"><div class="hero"><div><span class="eyebrow">WELCOME BACK</span><h2 id="welcomeName">Plan your next event with confidence.</h2><p>Create a new event or continue exactly where you left off.</p><button id="heroCreate" class="primary-btn">＋ Create new event</button></div><div class="hero-mark">P</div></div><div class="section-head"><div><h2>Recent events</h2><p>Your latest saved plans.</p></div><button class="secondary-btn" data-view="events">View all</button></div><div id="recentEvents" class="event-grid"></div></section>
 
-      <p class="privacy">Your Gemini API key stays on the server. AI suggestions are estimates; confirm prices and availability with suppliers.</p>
-    </aside>
+    <section id="eventsView" class="page view-page" hidden><div class="section-head"><div><h2>My Events</h2><p>Only events belonging to your account appear here.</p></div><button id="eventsCreate" class="primary-btn">＋ New event</button></div><div id="allEvents" class="event-grid"></div></section>
 
-    <section class="chat-panel">
-      <header class="chat-header">
-        <div>
-          <p id="serviceStatus" class="status"><span></span> CHECKING AI</p>
-          <h2>Plan your next event</h2>
-        </div>
-        <div class="header-actions">
-          <button id="exportBtn" class="secondary-btn" type="button" disabled>Export plan</button>
-          <button id="newChatBtn" class="secondary-btn" type="button">New chat</button>
-        </div>
-      </header>
-
-      <div id="messages" class="messages" aria-live="polite">
-        <div class="welcome-card">
-          <div class="welcome-mark">P</div>
-          <span class="eyebrow">WELCOME TO PLANORA</span>
-          <h3>What are we celebrating?</h3>
-          <p>Give me a few details or start with just the event type. I’ll help you build the rest.</p>
-          <div class="quick-prompts" id="quickPrompts">
-            <button type="button" data-prompt="Help me plan an 18th birthday debut.">🎂 18th Birthday</button>
-            <button type="button" data-prompt="Help me plan a graduation celebration.">🎓 Graduation</button>
-            <button type="button" data-prompt="Help me plan a wedding reception.">💍 Wedding</button>
-            <button type="button" data-prompt="Help me plan a corporate event.">💼 Corporate</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="errorBanner" class="error-banner" role="alert" hidden>
-        <span id="errorText"></span>
-        <button id="retryBtn" type="button">Retry</button>
-      </div>
-
-      <form id="chatForm" class="composer">
-        <label class="sr-only" for="messageInput">Message Planora</label>
-        <textarea id="messageInput" rows="1" maxlength="6000" placeholder="Tell Planora about your event..." required></textarea>
-        <div class="composer-foot">
-          <span>Enter to send · Shift + Enter for a new line</span>
-          <button id="sendBtn" class="send-btn" type="submit" aria-label="Send message">➜</button>
-        </div>
-      </form>
-      <p class="disclaimer">Planora can make mistakes. Verify important event details, prices, and supplier availability.</p>
+    <section id="plannerView" class="planner view-page" hidden>
+      <div class="planner-chat"><div class="planner-head"><div><span class="eyebrow">AI PLANNER</span><h2 id="plannerTitle">New event</h2></div><div><button id="exportBtn" class="secondary-btn">Export</button><button id="deleteEventBtn" class="danger-ghost">Delete</button></div></div><div id="messages" class="messages"></div><div id="errorBanner" class="error-banner" hidden><span id="errorText"></span><button id="retryBtn">Retry</button></div><form id="chatForm" class="composer"><textarea id="messageInput" maxlength="6000" rows="1" placeholder="Tell Planify AI about your event..." required></textarea><div class="composer-foot"><span>Enter to send · Shift + Enter for a new line</span><button id="sendBtn" class="send-btn">➜</button></div></form><p class="disclaimer">AI suggestions are estimates. Verify important details, prices and availability.</p></div>
+      <aside class="details-panel"><div class="details-head"><div><span class="eyebrow">AUTO-SAVED</span><h3>Event details</h3></div><span id="progressText">0/6</span></div><div class="progress-track"><span id="progressBar"></span></div><form id="eventDetailsForm" class="details-form"><label>Event type<input id="detailTypeInput" data-field="event_type" placeholder="e.g. Wedding"></label><label>Event date<input id="detailDateInput" data-field="event_date" type="date"></label><label>Location<input id="detailLocationInput" data-field="location" placeholder="City or venue"></label><label>Guests<input id="detailGuestsInput" data-field="guest_count" type="number" min="1"></label><label>Budget (₱)<input id="detailBudgetInput" data-field="budget" type="number" min="0" step="1"></label><label>Theme / preferences<textarea id="detailThemeInput" data-field="theme" rows="3" placeholder="Style, colors, preferences"></textarea></label></form></aside>
     </section>
+
+    <section id="settingsView" class="page view-page" hidden><div class="settings-layout"><aside class="settings-nav"><button class="settings-tab active" data-settings="profile">Profile</button><button class="settings-tab" data-settings="appearance">Appearance</button><button class="settings-tab" data-settings="ai">Planify AI AI</button><button class="settings-tab" data-settings="notifications">Notifications</button><button class="settings-tab" data-settings="security">Security</button><button class="settings-tab danger-text" data-settings="account">Account</button></aside><div class="settings-content">
+      <div class="settings-pane" data-pane="profile"><h2>Profile</h2><p>Manage how you appear in Planify AI.</p><form id="profileForm" class="settings-form"><div class="profile-picture-row"><div id="profileAvatar" class="profile-avatar">U</div><div><strong>Profile picture</strong><small>Use an image URL for now.</small></div></div><label>Profile picture URL<input id="profilePicture" type="url" placeholder="https://..."></label><label>Full name<input id="profileFullName" required maxlength="80"></label><label>Display name<input id="profileDisplayName" maxlength="50"></label><label>Email<input id="profileEmail" type="email" disabled></label><button class="primary-btn" type="submit">Save profile</button></form></div>
+      <div class="settings-pane" data-pane="appearance" hidden><h2>Appearance</h2><p>Choose how Planify AI looks on this account.</p><form id="appearanceForm" class="settings-form"><fieldset><legend>Theme</legend><div class="choice-grid"><label><input type="radio" name="theme" value="light"> Light</label><label><input type="radio" name="theme" value="dark"> Dark</label><label><input type="radio" name="theme" value="system"> System</label></div></fieldset><fieldset><legend>View density</legend><div class="choice-grid"><label><input type="radio" name="density" value="comfortable"> Comfortable</label><label><input type="radio" name="density" value="compact"> Compact</label></div></fieldset><button class="primary-btn">Save appearance</button></form></div>
+      <div class="settings-pane" data-pane="ai" hidden><h2>Planify AI AI</h2><p>Set defaults used while planning.</p><form id="aiForm" class="settings-form"><label>Default currency<select id="currency"><option value="PHP">PHP — Philippine Peso (₱)</option><option value="USD">USD — US Dollar ($)</option></select></label><label>Response detail<select id="detailLevel"><option value="concise">Concise</option><option value="balanced">Balanced</option><option value="detailed">Detailed</option></select></label><label>Default planning preferences<textarea id="planningPrefs" rows="5" placeholder="e.g. Prioritize affordable local options and simple programs."></textarea></label><button class="primary-btn">Save AI preferences</button></form></div>
+      <div class="settings-pane" data-pane="notifications" hidden><h2>Notifications</h2><p>Preferences are saved now. Notification delivery can be connected later.</p><form id="notificationsForm" class="settings-form"><label class="switch-row"><span><strong>Event reminders</strong><small>Remind me about upcoming events.</small></span><input id="eventReminders" type="checkbox"></label><label class="switch-row"><span><strong>Planning reminders</strong><small>Remind me to continue unfinished plans.</small></span><input id="planningReminders" type="checkbox"></label><label>Reminder time<input id="reminderTime" type="time"></label><button class="primary-btn">Save notifications</button></form></div>
+      <div class="settings-pane" data-pane="security" hidden><h2>Security</h2><p>Manage password and sessions.</p><form id="passwordForm" class="settings-form"><label>New password<input id="newPassword" type="password" minlength="6" required></label><label>Confirm new password<input id="confirmNewPassword" type="password" minlength="6" required></label><button class="primary-btn">Change password</button></form><hr><button id="securityLogout" class="secondary-btn">Sign out of Planify AI</button></div>
+      <div class="settings-pane" data-pane="account" hidden><h2>Account</h2><p>Your Planify AI account and saved data.</p><div class="account-info"><span>Email</span><strong id="accountEmail"></strong><span>User ID</span><code id="accountId"></code></div><div class="danger-zone"><h3>Delete account data</h3><p>This permanently deletes your Planify AI profile, settings, events and saved conversations. Authentication account deletion requires the optional server admin function described in the setup guide.</p><button id="deleteDataBtn" class="danger-btn">Delete my Planify AI data</button></div></div>
+    </div></div></section>
   </main>
-  <script src="/app.js"></script>
-</body>
-</html>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/app.js"></script></body></html>
