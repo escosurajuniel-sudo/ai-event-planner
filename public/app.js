@@ -1589,6 +1589,96 @@ if (signupTab) {
 }
 
 // ========================================
+// SIGN UP
+// ========================================
+
+$("#signupForm")?.addEventListener(
+  "submit",
+  async (event) => {
+    event.preventDefault();
+
+    if (!supabaseClient) {
+      $("#authMessage").textContent =
+        "Supabase is not connected.";
+      return;
+    }
+
+    const fullName =
+      $("#signupName").value.trim();
+
+    const email =
+      $("#signupEmail").value.trim();
+
+    const password =
+      $("#signupPassword").value;
+
+    const confirmPassword =
+      $("#signupConfirm").value;
+
+    if (password !== confirmPassword) {
+      $("#authMessage").textContent =
+        "Passwords do not match.";
+      return;
+    }
+
+    if (password.length < 6) {
+      $("#authMessage").textContent =
+        "Password must contain at least 6 characters.";
+      return;
+    }
+
+    $("#authMessage").textContent =
+      "Creating account…";
+
+    try {
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+            },
+          },
+        });
+
+      if (error) {
+        $("#authMessage").textContent =
+          error.message;
+        return;
+      }
+
+      // Email confirmation is enabled
+      if (!data.session) {
+        $("#signupForm").reset();
+
+        $("#authMessage").textContent =
+          "Account created! Check your email and confirm your account before logging in.";
+
+        return;
+      }
+
+      // Email confirmation is disabled,
+      // so Supabase logged the new user in immediately.
+      session = data.session;
+
+      $("#authMessage").textContent = "";
+
+      await enterApp();
+
+    } catch (error) {
+      console.error(
+        "Signup error:",
+        error
+      );
+
+      $("#authMessage").textContent =
+        error.message ||
+        "Unable to create account. Please try again.";
+    }
+  }
+);
+// ========================================
 // LOGIN
 // ========================================
 
